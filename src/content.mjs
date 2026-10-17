@@ -13,7 +13,7 @@ export const site = {
   title: 'Solvable · A weekly reading group in Dubai',
   description:
     'A weekly reading group in Dubai on how science and technology make the world better, and where you fit in. Free. You buy your own coffee.',
-  url: 'https://solvable.ae',
+  url: 'https://solvable.socialambitionlabs.com',
 };
 
 export const nav = [
