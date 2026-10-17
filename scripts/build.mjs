@@ -179,10 +179,10 @@ cpSync('design-system/bundle.css', `${OUT}/styles/bundle.css`);
 cpSync('src/site.css', `${OUT}/styles/site.css`);
 writeFileSync(`${OUT}/styles/tokens.css`, tokensCss());
 writeFileSync(`${OUT}/favicon.svg`, favicon);
-writeFileSync(`${OUT}/index.html`, html);
+writeFileSync(`${OUT}/solvable.html`, html);
 
 // Social Ambition Labs landing page, served at the root of socialambitionlabs.com (see vercel.json).
 mkdirSync(`${OUT}/labs`, { recursive: true });
 cpSync('src/labs.html', `${OUT}/labs/index.html`);
 writeFileSync(`${OUT}/labs/favicon.svg`, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" stroke="${color.ink.light}" stroke-width="3" stroke-linecap="round"><style>@media (prefers-color-scheme:dark){*{stroke:${color.ink.dark}}}</style><circle cx="20" cy="20" r="17"/><path d="M9 27 L17 19 L22 23 L31 12"/><path d="M25 12 H31 V18"/></svg>\n`);
-console.log(`Built ${OUT}/index.html (${(html.length / 1024).toFixed(1)} KB)`);
+console.log(`Built ${OUT}/solvable.html (${(html.length / 1024).toFixed(1)} KB)`);

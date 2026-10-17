@@ -18,6 +18,13 @@ npm run check   # brief sections, voice rules, contrast in both themes, assets
 
 The live page ships no JavaScript: the React components are rendered once at build time.
 
+## Pages and domains
+
+- `solvable.socialambitionlabs.com` (and any other host): Solvable, built to `public/solvable.html`.
+- `socialambitionlabs.com` and `www.`: the Social Ambition Labs landing page, `src/labs.html`.
+
+`vercel.json` picks the page for `/` by host. There is deliberately no `public/index.html`: a file at `/` would override those rules.
+
 ## Deploying
 
 Import the repo in Vercel; `vercel.json` sets the build command and the `public/` output folder. Any static host works after `npm run build`.

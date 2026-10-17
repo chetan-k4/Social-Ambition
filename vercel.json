@@ -4,6 +4,7 @@
   "installCommand": "npm install",
   "rewrites": [
     { "source": "/", "has": [{ "type": "host", "value": "socialambitionlabs.com" }], "destination": "/labs/index.html" },
-    { "source": "/", "has": [{ "type": "host", "value": "www.socialambitionlabs.com" }], "destination": "/labs/index.html" }
+    { "source": "/", "has": [{ "type": "host", "value": "www.socialambitionlabs.com" }], "destination": "/labs/index.html" },
+    { "source": "/", "destination": "/solvable.html" }
   ]
 }

@@ -5,8 +5,9 @@ import { readFileSync, existsSync } from 'node:fs';
 const failures = [];
 const fail = (msg) => failures.push(msg);
 
-const html = existsSync('public/index.html') ? readFileSync('public/index.html', 'utf8') : '';
-if (!html) fail('public/index.html is missing. Run npm run build first.');
+// Solvable lives at public/solvable.html; "/" is chosen per host in vercel.json.
+const html = existsSync('public/solvable.html') ? readFileSync('public/solvable.html', 'utf8') : '';
+if (!html) fail('public/solvable.html is missing. Run npm run build first.');
 
 const tokens = JSON.parse(readFileSync('design-system/tokens.json', 'utf8'));
 
@@ -82,7 +83,7 @@ const tokensCss = existsSync('public/styles/tokens.css') ? readFileSync('public/
 if (!tokensCss.includes('prefers-color-scheme: dark')) fail('tokens.css has no dark theme');
 for (const f of ['styles/bundle.css', 'styles/site.css', 'favicon.svg', 'fonts/BricolageGrotesque-700.woff2']) {
   if (!existsSync(`public/${f}`)) fail(`Missing public/${f}`);
-  if (!html.includes(f)) fail(`index.html does not reference ${f}`);
+  if (!html.includes(f)) fail(`solvable.html does not reference ${f}`);
 }
 
 // 8. Social Ambition Labs landing page, served on socialambitionlabs.com.
@@ -98,6 +99,15 @@ const hosts = (vercel.rewrites || []).flatMap((r) => (r.has || []).map((x) => x.
 for (const host of ['socialambitionlabs.com', 'www.socialambitionlabs.com']) {
   if (!hosts.includes(host)) fail(`vercel.json does not route ${host} to the labs page`);
 }
+// A file at "/" would win over every rewrite (Vercel's filesystem precedence).
+if (existsSync('public/index.html')) fail('public/index.html exists, so host rewrites for "/" never apply');
+const rewrites = vercel.rewrites || [];
+const fallback = rewrites[rewrites.length - 1] || {};
+if (fallback.source !== '/' || fallback.has || fallback.destination !== '/solvable.html') {
+  fail('The last rewrite must send "/" on any other host to /solvable.html');
+}
+const labsIdx = rewrites.findIndex((r) => r.destination === '/labs/index.html');
+if (labsIdx === -1 || labsIdx > rewrites.indexOf(fallback)) fail('Labs host rewrites must come before the fallback');
 
 if (failures.length) {
   console.error(`✗ ${failures.length} check(s) failed:\n- ` + failures.join('\n- '));
