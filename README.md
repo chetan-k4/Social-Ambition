@@ -21,7 +21,7 @@ The live page ships no JavaScript: the React components are rendered once at bui
 ## Pages and domains
 
 - `solvable.socialambitionlabs.com` (and any other host): Solvable, built to `public/solvable.html`.
-- `socialambitionlabs.com` and `www.`: the Social Ambition Labs landing page, `src/labs.html`.
+- `socialambitionlabs.com` and `www.`: the Social Ambition Labs coming-soon page, built from `design-system-labs/` (a copy of the [Social Ambition Labs design system](https://claude.ai/artifact/QneGKMs9ZKMRYhvhr7knnV)) with copy in `src/content.mjs` (`labs`) and layout in `src/labs.css`. Keep it free of programme details, places and links until launch; `npm run check` enforces this.
 
 `vercel.json` picks the page for `/` by host. There is deliberately no `public/index.html`: a file at `/` would override those rules.
 

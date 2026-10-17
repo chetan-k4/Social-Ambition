@@ -148,3 +148,13 @@ export const footer = {
   about:
     'About: Solvable is run by Chetan. It grew out of the effective altruism community and is open to everyone, whatever their views.',
 };
+
+// Social Ambition Labs coming-soon page (socialambitionlabs.com).
+// Keep it to the lab itself: no programmes, places, partner projects or links yet.
+export const labs = {
+  title: 'Social Ambition Labs',
+  eyebrow: 'Coming soon',
+  headline: 'Working on problems that affect millions.',
+  lead: 'An impact-focused lab using reason, science and technology to solve societal-scale problems.',
+  footer: '© 2026 Social Ambition Labs',
+};

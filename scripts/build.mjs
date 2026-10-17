@@ -1,4 +1,4 @@
-// Builds public/ from the Solvable design system and src/content.mjs.
+// Builds public/ from the two design systems (Solvable, Social Ambition Labs) and src/content.mjs.
 // The design system's React components are rendered once, here, to static HTML,
 // so the live page ships no JavaScript.
 import { readFileSync, writeFileSync, mkdirSync, cpSync, rmSync } from 'node:fs';
@@ -17,23 +17,20 @@ const S = sandbox.window.Solvable;
 const h = React.createElement;
 
 // ---------- tokens.css ----------
-function tokensCss() {
+function tokensCss(tokens, source) {
   const [light, dark] = tokens.color.themes.map((t) => t.id);
   const colors = (theme) => tokens.color.tokens.map((t) => `  --${t.name}: ${t.value[theme] ?? t.value[light]};`).join('\n');
-  const fam = tokens.type.families;
+  const families = Object.entries(tokens.type.families).map(([k, v]) => `  --font-${k}: ${v};`).join('\n');
   const lengths = [...tokens.spacing.tokens, ...tokens.radius.tokens].map((t) => `  --${t.name}: ${t.value};`).join('\n');
   const faces = tokens.type.fonts.map((f) =>
-    `@font-face { font-family: "${f.family}"; src: url("../${f.file}") format("woff2"); font-weight: ${f.weight}; font-style: normal; font-display: swap; }`).join('\n');
-  return `/* Solvable — generated from design-system/tokens.json by scripts/build.mjs */
+    `@font-face { font-family: "${f.family}"; src: url("/${f.file}") format("woff2"); font-weight: ${f.weight}; font-style: normal; font-display: swap; }`).join('\n');
+  return `/* ${tokens.name} — generated from ${source} by scripts/build.mjs */
 ${faces}
 
 :root {
   color-scheme: light dark;
 ${colors(light)}
-  --font-display: ${fam.display};
-  --font-serif: ${fam.serif};
-  --font-mono: ${fam.mono};
-  --font-hand: ${fam.hand};
+${families}
 ${lengths}
 }
 @media (prefers-color-scheme: dark) {
@@ -177,12 +174,64 @@ mkdirSync(`${OUT}/styles`, { recursive: true });
 cpSync('design-system/fonts', `${OUT}/fonts`, { recursive: true });
 cpSync('design-system/bundle.css', `${OUT}/styles/bundle.css`);
 cpSync('src/site.css', `${OUT}/styles/site.css`);
-writeFileSync(`${OUT}/styles/tokens.css`, tokensCss());
+writeFileSync(`${OUT}/styles/tokens.css`, tokensCss(tokens, 'design-system/tokens.json'));
 writeFileSync(`${OUT}/favicon.svg`, favicon);
 writeFileSync(`${OUT}/solvable.html`, html);
 
-// Social Ambition Labs landing page, served at the root of socialambitionlabs.com (see vercel.json).
+// ---------- Social Ambition Labs: coming-soon page ----------
+// Served at the root of socialambitionlabs.com (see vercel.json). Built from design-system-labs/.
+const labsTokens = JSON.parse(readFileSync('design-system-labs/tokens.json', 'utf8'));
+const labsSandbox = { window: { React }, String, Object, Array, Promise };
+vm.runInNewContext(readFileSync('design-system-labs/bundle.js', 'utf8'), labsSandbox);
+const L = labsSandbox.window.SAL;
+const lc = Object.fromEntries(labsTokens.color.tokens.map((t) => [t.name, t.value]));
+
+const labsBody = renderToStaticMarkup(
+  h(L.DotGrid, { className: 'labs' },
+    h('header', { className: 'labs-top' }, h(L.Logo, { height: 36 })),
+    h('main', { className: 'labs-main' },
+      h(L.Label, { tone: 'signal' }, c.labs.eyebrow),
+      h('h1', { className: 'labs-display' }, c.labs.headline),
+      h('p', { className: 'labs-lead' }, c.labs.lead)),
+    h('footer', { className: 'labs-foot' }, h(L.Label, null, c.labs.footer))));
+
+const labsHtml = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(c.labs.title)}</title>
+<meta name="description" content="${esc(c.labs.lead)}">
+<meta property="og:title" content="${esc(c.labs.title)}">
+<meta property="og:description" content="${esc(c.labs.lead)}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://socialambitionlabs.com">
+<meta name="theme-color" content="${lc.paper.light}">
+<link rel="icon" href="/labs/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/BricolageGrotesque-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/SourceSerif4-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles/labs-tokens.css">
+<link rel="stylesheet" href="/styles/labs-bundle.css">
+<style>
+${readFileSync('src/labs.css', 'utf8')}</style>
+</head>
+<body>
+${labsBody}
+</body>
+</html>
+`;
+
+// The mark (2x2 tiles, top-right broken out in signal), same geometry as the Logo component.
+const tiles = [[4, 35], [29, 35], [4, 10]].map(([x, y]) => `<rect class="l" x="${x}" y="${y}" width="19" height="19" rx="3" fill="none" stroke-width="4"/>`).join('');
+const labsFavicon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<style>.l{stroke:${lc.ink.light}}.s{fill:${lc.signal.light}}@media (prefers-color-scheme:dark){.l{stroke:${lc.ink.dark}}.s{fill:${lc.signal.dark}}}</style>
+<g transform="translate(4 0)">${tiles}<rect class="s" x="33" y="2" width="21" height="21" rx="3"/></g>
+</svg>
+`;
+
 mkdirSync(`${OUT}/labs`, { recursive: true });
-cpSync('src/labs.html', `${OUT}/labs/index.html`);
-writeFileSync(`${OUT}/labs/favicon.svg`, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" stroke="${color.ink.light}" stroke-width="3" stroke-linecap="round"><style>@media (prefers-color-scheme:dark){*{stroke:${color.ink.dark}}}</style><circle cx="20" cy="20" r="17"/><path d="M9 27 L17 19 L22 23 L31 12"/><path d="M25 12 H31 V18"/></svg>\n`);
-console.log(`Built ${OUT}/solvable.html (${(html.length / 1024).toFixed(1)} KB)`);
+writeFileSync(`${OUT}/styles/labs-tokens.css`, tokensCss(labsTokens, 'design-system-labs/tokens.json'));
+cpSync('design-system-labs/bundle.css', `${OUT}/styles/labs-bundle.css`);
+writeFileSync(`${OUT}/labs/index.html`, labsHtml);
+writeFileSync(`${OUT}/labs/favicon.svg`, labsFavicon);
+console.log(`Built ${OUT}/solvable.html and ${OUT}/labs/index.html`);

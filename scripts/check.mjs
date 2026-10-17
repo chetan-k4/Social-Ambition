@@ -89,11 +89,28 @@ for (const f of ['styles/bundle.css', 'styles/site.css', 'favicon.svg', 'fonts/B
 // 8. Social Ambition Labs landing page, served on socialambitionlabs.com.
 const labs = existsSync('public/labs/index.html') ? readFileSync('public/labs/index.html', 'utf8') : '';
 if (!labs) fail('public/labs/index.html is missing');
-for (const text of ['Social Ambition Labs', 'reason, science and technology', '<title>']) {
+for (const text of ['Social Ambition Labs', 'reason, science and technology', 'Coming soon', '<title>', 'class="sal-dots', 'class="sal-logo']) {
   if (!labs.includes(text)) fail(`Labs page missing: "${text}"`);
 }
-if (/impactful\s*giving/i.test(labs)) fail('Labs page mentions Impactful Giving');
-if (/prefers-color-scheme: dark/.test(labs) === false) fail('Labs page has no dark theme');
+// Coming soon: no programme details, places, sister projects or links of any kind.
+const labsText = labs.replace(/<!doctype[^>]*>/i, '').replace(/<style[\s\S]*?<\/style>/g, '').replace(/<path[^>]*>/g, '');
+for (const banned of [/impactful\s*giving/i, /solvable/i, /dubai/i, /india/i, /uae/i, /entrepreneur/i, /residen/i, /programme|program\b/i, /<a\s/i, /<form/i, /!/]) {
+  if (banned.test(labsText)) fail(`Labs page contains ${banned}`);
+}
+const labsTokensCss = existsSync('public/styles/labs-tokens.css') ? readFileSync('public/styles/labs-tokens.css', 'utf8') : '';
+if (!labsTokensCss.includes('prefers-color-scheme: dark')) fail('Labs tokens have no dark theme');
+for (const f of ['styles/labs-tokens.css', 'styles/labs-bundle.css', 'labs/favicon.svg']) {
+  if (!existsSync(`public/${f}`)) fail(`Missing public/${f}`);
+  if (!labs.includes(f)) fail(`Labs page does not reference ${f}`);
+}
+const labsTokens = JSON.parse(readFileSync('design-system-labs/tokens.json', 'utf8'));
+const lc = Object.fromEntries(labsTokens.color.tokens.map((t) => [t.name, t.value]));
+for (const theme of ['light', 'dark']) {
+  for (const [fg, bg] of [['ink', 'paper'], ['ink-muted', 'paper'], ['signal', 'paper'], ['ink', 'paper-raised'], ['ink-muted', 'paper-raised']]) {
+    const r = ratio(lc[fg][theme], lc[bg][theme]);
+    if (r < 4.5) fail(`Labs contrast ${fg} on ${bg} (${theme}) is ${r.toFixed(2)}:1`);
+  }
+}
 const vercel = JSON.parse(readFileSync('vercel.json', 'utf8'));
 const hosts = (vercel.rewrites || []).flatMap((r) => (r.has || []).map((x) => x.value));
 for (const host of ['socialambitionlabs.com', 'www.socialambitionlabs.com']) {

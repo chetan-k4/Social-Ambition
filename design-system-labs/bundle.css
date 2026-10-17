@@ -1,0 +1,54 @@
+/* Social Ambition Labs components. Every colour, size and radius comes from tokens.css. */
+.sal-icon { display: inline-block; flex: none; vertical-align: -0.2em; }
+
+.sal-logo { display: block; flex: none; }
+.sal-logo-line { stroke: var(--ink); fill: none; }
+.sal-logo-fill { fill: var(--signal); }
+.sal-logo-fill-ink { fill: var(--ink); }
+.sal-logo-word { fill: var(--ink); }
+.sal-logo-labs { fill: var(--signal); }
+.sal-logo-rule { stroke: var(--rule); }
+
+.sal-btn {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  min-height: 48px; padding: 0 var(--space-6); border-radius: var(--radius-md); border: 2px solid transparent;
+  font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 1; text-decoration: none; cursor: pointer;
+  transition: background-color .12s ease, transform .12s ease;
+}
+.sal-btn:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+.sal-btn[disabled] { opacity: .6; cursor: progress; }
+.sal-btn--primary { background: var(--signal); color: var(--on-signal); }
+.sal-btn--primary:hover .sal-icon { transform: translateX(3px); }
+.sal-btn .sal-icon { transition: transform .12s ease; }
+.sal-btn--secondary { background: transparent; color: var(--ink); border-color: var(--ink); }
+.sal-btn--secondary:hover { background: var(--signal-soft); }
+.sal-btn--quiet { background: transparent; color: var(--signal); padding: 0 var(--space-1); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+@media (prefers-reduced-motion: reduce) { .sal-btn, .sal-btn .sal-icon { transition: none; } .sal-btn--primary:hover .sal-icon { transform: none; } }
+
+.sal-label { display: inline-flex; align-items: center; gap: var(--space-1); font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
+.sal-label--muted { color: var(--ink-muted); }
+.sal-label--signal { color: var(--signal); }
+
+.sal-tag { display: inline-flex; align-items: center; gap: var(--space-2); padding: 6px var(--space-3); border: 1.5px solid var(--rule); border-radius: var(--radius-sm); background: var(--paper-raised); color: var(--ink); font-family: var(--font-serif); font-size: 15px; line-height: 20px; }
+.sal-tag .sal-icon { color: var(--ink-muted); }
+
+.sal-dots { background-color: var(--paper); background-image: radial-gradient(var(--dot) 1.25px, transparent 1.6px); background-size: var(--grid-cell) var(--grid-cell); background-position: calc(var(--grid-cell) / 2) calc(var(--grid-cell) / 2); }
+
+.sal-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; padding: var(--space-4) 0; }
+.sal-header-home { display: inline-flex; border-radius: var(--radius-sm); }
+.sal-header-home:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
+
+.sal-form { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-6); background: var(--paper-raised); border: 1.5px solid var(--rule); border-radius: var(--radius-md); color: var(--ink); max-width: 640px; }
+.sal-form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); }
+.sal-field { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.sal-field label { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+.sal-field input, .sal-field select, .sal-field textarea { min-height: 46px; padding: var(--space-2) var(--space-4); border: 1.5px solid var(--ink-muted); border-radius: var(--radius-md); background: var(--paper); color: var(--ink); font-family: var(--font-serif); font-size: 16px; line-height: 24px; width: 100%; box-sizing: border-box; }
+.sal-field textarea { resize: vertical; }
+.sal-field input::placeholder, .sal-field textarea::placeholder { color: var(--ink-muted); opacity: .85; }
+.sal-field input:focus-visible, .sal-field select:focus-visible, .sal-field textarea:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; border-color: var(--signal); }
+.sal-form-help { margin: 0; font-family: var(--font-serif); font-size: 14px; line-height: 20px; color: var(--ink-muted); }
+.sal-form-error { margin: 0; font-family: var(--font-serif); font-size: 15px; line-height: 22px; color: var(--ink); padding-left: var(--space-2); border-left: 3px solid var(--signal); }
+.sal-form .sal-btn { align-self: flex-start; }
+.sal-form--done { flex-direction: row; align-items: flex-start; gap: var(--space-4); }
+.sal-form-tick { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 2px solid var(--result); border-radius: var(--radius-md); color: var(--result); flex: none; }
+.sal-form-done-title { margin: 0 0 var(--space-1); font-family: var(--font-display); font-size: 20px; font-weight: 600; }
