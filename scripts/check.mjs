@@ -85,6 +85,20 @@ for (const f of ['styles/bundle.css', 'styles/site.css', 'favicon.svg', 'fonts/B
   if (!html.includes(f)) fail(`index.html does not reference ${f}`);
 }
 
+// 8. Social Ambition Labs landing page, served on socialambitionlabs.com.
+const labs = existsSync('public/labs/index.html') ? readFileSync('public/labs/index.html', 'utf8') : '';
+if (!labs) fail('public/labs/index.html is missing');
+for (const text of ['Social Ambition Labs', 'reason, science and technology', '<title>']) {
+  if (!labs.includes(text)) fail(`Labs page missing: "${text}"`);
+}
+if (/impactful\s*giving/i.test(labs)) fail('Labs page mentions Impactful Giving');
+if (/prefers-color-scheme: dark/.test(labs) === false) fail('Labs page has no dark theme');
+const vercel = JSON.parse(readFileSync('vercel.json', 'utf8'));
+const hosts = (vercel.rewrites || []).flatMap((r) => (r.has || []).map((x) => x.value));
+for (const host of ['socialambitionlabs.com', 'www.socialambitionlabs.com']) {
+  if (!hosts.includes(host)) fail(`vercel.json does not route ${host} to the labs page`);
+}
+
 if (failures.length) {
   console.error(`✗ ${failures.length} check(s) failed:\n- ` + failures.join('\n- '));
   process.exit(1);
